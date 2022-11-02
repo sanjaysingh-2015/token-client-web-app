@@ -1,0 +1,40 @@
+.required:before {
+    content:"*";
+    color:red;
+}
+
+.MuiTypography-body1 {
+    font-size: 1.5rem !important;
+}
+.rdt_TableHeadRow {
+    background-color: #4f71a9 !important;
+    font-size: 14px;
+    font-weight: bold;
+    color: #FFF !important;
+}
+
+.rdt_TableFooter {
+    background-color: #4f71a9 !important;
+    color: #FFF !important;
+}
+
+.rdt_Pagination {
+    background-color: #efefef !important;
+    color: #454545 !important;
+}
+
+.table-container {
+    padding-bottom: 1em;
+    padding-top: 1em;
+    padding-right: 1em;
+    border-top: #666666 1px;
+    background-color: #efefef;
+}
+
+.form-row {
+    padding-bottom: 1em;
+}
+
+.form-control-1 {
+    padding: 0px !important;
+}
