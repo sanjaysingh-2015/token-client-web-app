@@ -7,3 +7,4 @@ export * from './tokenType.service';
 export * from './processStage.service';
 export * from './counter.service';
 export * from './masterLookup.service';
+export * from './device.service';

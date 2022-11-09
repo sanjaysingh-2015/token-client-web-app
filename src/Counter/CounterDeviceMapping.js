@@ -7,8 +7,10 @@ import {
     categoryActions,
     departmentActions,
     organizationActions,
-    counterActions, masterLookupActions
+    counterActions,
+    masterLookupActions
 } from "../_actions";
+import { lookupTypeConstants } from "../_constants";
 import {useDispatch, useSelector} from "react-redux";
 import "../_components/templates/custom-styles.css"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -27,11 +29,12 @@ export const CounterForm = () => {
     const [departments, setDepartments] = useState([{ label: "Please select", value: "" }]);
     const [categories, setCategories] = useState([{ label: "Please select", value: "" }]);
     const [tokenTypes, setTokenTypes] = useState([{ label: "Please select", value: "" }]);
-    const [processStages, setProcessStages] = useState( [{ label: "Please select", value: "" }]);
+    const [devices, setDevices] = useState( [{ label: "Please select", value: "" }]);
     const [orgCode, setOrgCode] = useState(null);
     const [deptCode, setDeptCode] = useState(null);
     const [catCode, setCatCode] = useState(null);
     const [typeCode, setTypeCode] = useState(null);
+    const [selectedDevices, setSelectedDevices] = useState([]);
     const dispatch = useDispatch();
     const param = useLocation();
     const navigate = useNavigate();
@@ -49,42 +52,43 @@ export const CounterForm = () => {
         setDepartments(param?.state?.deptCode);
         setCategories(param?.state?.catCode);
         setTokenTypes(param?.state?.typeCode);
+        setDevices(param?.state?.devices);
+        param?.state?.data?.mappedDevices?.map((stage) => (setSelectedDevices(current => [...current, {value: stage.code, label: stage.name}])));
 
         masterLookupActions.getAll("ALL",
             param?.state?.orgCode?.value === undefined ?'':param?.state?.orgCode?.value,
             param?.state?.deptCode?.value === undefined ?'':param?.state?.deptCode?.value,
             param?.state?.catCode?.value === undefined ?'':param?.state?.catCode?.value,
             param?.state?.typeCode?.value === undefined ?'':param?.state?.typeCode?.value
-        ).then((response) => {
+            ).then((response) => {
             setOrganizations(response.data.organizations);
             setDepartments(response.data.departments);
             setCategories(response.data.categories);
             setTokenTypes(response.data.tokenTypes);
-            setProcessStages(response.data.processStages);
+            setDevices(response.data.devices);
         });
-
     },[]);
 
     const handleSubmit = (event) => {
+
         if(orgCode === undefined || isEmpty(orgCode)) setOrgCode(null);
         event.preventDefault();
-        if(id === undefined) {
-            if(orgCode === undefined) {
+            if(orgCode === '') {
             } else {
-                dispatch(counterActions.add({
+                let currentSelectedDevices = [];
+                console.log("selectedDevices", selectedDevices);
+                selectedDevices?.map((stage) => (currentSelectedDevices.push(stage.value)));
+                console.log("Devices Selected: ",currentSelectedDevices);
+                dispatch(counterActions.addDeviceMap(counterNo,{
                     organizationCode: orgCode.value,
                     departmentCode: deptCode? deptCode.value:'',
                     tokenCategoryCode: catCode? catCode.value:'',
-                    tokenTypeCode: typeCode? typeCode.value:'', counterNo
+                    tokenTypeCode: typeCode? typeCode.value:'',
+                    counterCode: code,
+                    devices: currentSelectedDevices
                 }));
             }
-        } else {
-            dispatch(counterActions.edit(code,
-                {organizationCode: orgCode.value,
-                    departmentCode: deptCode? deptCode.value:'',
-                    tokenCategoryCode: catCode? catCode.value:'',
-                    tokenTypeCode: typeCode? typeCode.value:'', counterNo, status}));
-        }
+
         navigate("/counters", {
             state:{
                 orgCode,
@@ -94,66 +98,13 @@ export const CounterForm = () => {
             },
         });
     }
-    function handleOrganizationChange(org) {
-        setOrgCode(org);
-        masterLookupActions.getAll("DEPT",
-            param?.state?.orgCode?.value === undefined ?'':param?.state?.orgCode?.value,
-            param?.state?.deptCode?.value === undefined ?'':param?.state?.deptCode?.value,
-            param?.state?.catCode?.value === undefined ?'':param?.state?.catCode?.value,
-            param?.state?.typeCode?.value === undefined ?'':param?.state?.typeCode?.value
-        ).then((response) => {
-            setOrganizations(response.data.organizations);
-            setDepartments(response.data.departments);
-            setCategories(response.data.categories);
-            setTokenTypes(response.data.tokenTypes);
-            setProcessStages(response.data.processStages);
-        });
-    }
-    function handleDepartmentChange(dept) {
-        setDeptCode(dept);
-        masterLookupActions.getAll("CAT",
-            param?.state?.orgCode?.value === undefined ?'':param?.state?.orgCode?.value,
-            param?.state?.deptCode?.value === undefined ?'':param?.state?.deptCode?.value,
-            param?.state?.catCode?.value === undefined ?'':param?.state?.catCode?.value,
-            param?.state?.typeCode?.value === undefined ?'':param?.state?.typeCode?.value
-        ).then((response) => {
-            setOrganizations(response.data.organizations);
-            setDepartments(response.data.departments);
-            setCategories(response.data.categories);
-            setTokenTypes(response.data.tokenTypes);
-            setProcessStages(response.data.processStages);
-        });
-    }
-    function handleCategoryChange(cat) {
-        setCatCode(cat);
-        masterLookupActions.getAll("TYP",
-            param?.state?.orgCode?.value === undefined ?'':param?.state?.orgCode?.value,
-            param?.state?.deptCode?.value === undefined ?'':param?.state?.deptCode?.value,
-            param?.state?.catCode?.value === undefined ?'':param?.state?.catCode?.value,
-            param?.state?.typeCode?.value === undefined ?'':param?.state?.typeCode?.value
-        ).then((response) => {
-            setOrganizations(response.data.organizations);
-            setDepartments(response.data.departments);
-            setCategories(response.data.categories);
-            setTokenTypes(response.data.tokenTypes);
-            setProcessStages(response.data.processStages);
-        });
-    }
-    function handleTypeChange(typeCode) {
-        setTypeCode(typeCode);
-        masterLookupActions.getAll("STG",
-            param?.state?.orgCode?.value === undefined ?'':param?.state?.orgCode?.value,
-            param?.state?.deptCode?.value === undefined ?'':param?.state?.deptCode?.value,
-            param?.state?.catCode?.value === undefined ?'':param?.state?.catCode?.value,
-            param?.state?.typeCode?.value === undefined ?'':param?.state?.typeCode?.value
-        ).then((response) => {
-            setOrganizations(response.data.organizations);
-            setDepartments(response.data.departments);
-            setCategories(response.data.categories);
-            setTokenTypes(response.data.tokenTypes);
-            setProcessStages(response.data.processStages);
-        });
-    }
+
+    const handleChange = (event) => {
+        console.log("event:", event);
+        setSelectedDevices([]);
+        event.map((device) => (setSelectedDevices(current => [...current, device])));
+    };
+
     const handleBackClick = (event,data) => {
         navigate("/counters", {
             state:{
@@ -164,16 +115,13 @@ export const CounterForm = () => {
             },
         });
     };
-    function handleStatusChange(status) {
-        setStatus(status);
-    }
 
     return (
         <>
             <div className="container table-container">
                 <div className="row form-row" style={{color:'#fff', backgroundColor: '#2a4262',padding:'0.25em'}}>
                     <div className="col-md-6" style={{marginTop:'0.25em'}}>
-                        <h4>Counter</h4>
+                        <h4>Counter Device Map</h4>
                     </div>
                     <div className="col-md-6">
                         <div className="form-group text-end" style={{ paddingTop:'0.5em' }}>
@@ -199,7 +147,7 @@ export const CounterForm = () => {
                                                 className="custom-select form-control form-control-1 header-drop-down float-right"
                                                 style={{padding: '0px !important'}}
                                                 id="orgList"
-                                                onChange={handleOrganizationChange}
+                                                isDisabled={true}
                                                 value={orgCode}
                                                 options={organizations}
                                             />
@@ -215,8 +163,8 @@ export const CounterForm = () => {
                                             <Select
                                                 className="custom-select form-control form-control-1 header-drop-down float-right"
                                                 style={{padding: '0px !important'}}
-                                                id="deptList"
-                                                onChange={handleDepartmentChange}
+                                                id="orgList"
+                                                isDisabled={true}
                                                 value={deptCode}
                                                 options={departments}
                                             />
@@ -234,8 +182,8 @@ export const CounterForm = () => {
                                             <Select
                                                 className="custom-select form-control form-control-1 header-drop-down float-right"
                                                 style={{padding: '0px !important'}}
-                                                id="catList"
-                                                onChange={handleCategoryChange}
+                                                id="orgList"
+                                                isDisabled={true}
                                                 value={catCode}
                                                 options={categories}
                                             />
@@ -252,7 +200,7 @@ export const CounterForm = () => {
                                                 className="custom-select form-control form-control-1 header-drop-down float-right"
                                                 style={{padding: '0px !important'}}
                                                 id="tokenTypeList"
-                                                onChange={handleTypeChange}
+                                                isDisabled={true}
                                                 value={typeCode}
                                                 options={tokenTypes}
                                             />
@@ -271,25 +219,24 @@ export const CounterForm = () => {
                                         </div>
                                     </div>
                                 </div>
-                                { id &&
-                                    <div className="col-md-6">
-                                        <div className="form-group">
-                                            <div className="input-group mb-3">
-                                                <div className="input-group-prepend">
-                                                <span className="input-group-text required"
-                                                      id="status">Status</span>
-                                                </div>
-                                                <select value={status}
-                                                        className="custom-select form-control header-drop-down float-right"
-                                                        id="status"
-                                                        onChange={(e) => handleStatusChange(e.target.value)}>
-                                                    <option key="ACTIVE" value="ACTIVE">ACTIVE</option>
-                                                    <option key="INACTIVE" value="INACTIVE">INACTIVE</option>
-                                                </select>
+                                <div className="col-md-6">
+                                    <div className="form-group">
+                                        <div className="input-group mb-3">
+                                            <div className="input-group-prepend">
+                                                <span className="input-group-text required" id="deviceList">Devices</span>
                                             </div>
+                                            <Select
+                                                className="custom-select form-control form-control-1 header-drop-down float-right"
+                                                style={{padding: '0px !important'}}
+                                                id="deviceList"
+                                                isMulti
+                                                onChange={handleChange}
+                                                value={selectedDevices}
+                                                options={devices}
+                                            />
                                         </div>
                                     </div>
-                                }
+                                </div>
                             </div>
                              <hr/>
                             <div className="row form-row">

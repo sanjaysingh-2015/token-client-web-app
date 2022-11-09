@@ -7,7 +7,7 @@ import {
     departmentActions,
     categoryActions,
     tokenTypeActions,
-    processStageActions,
+    deviceActions,
     masterLookupActions, counterActions
 } from '../_actions';
 import CustomDataTable from "../_components/templates/CustomDataTable";
@@ -20,8 +20,8 @@ import {isEmpty} from "lodash";
 import Select from "react-select";
 
 
-const ProcessStagePage = () => {
-    const [processStages, setProcessStages] = useState([]);
+const DevicePage = () => {
+    const [devices, setDevices] = useState([]);
     const [tokenTypes, setTokenTypes] = useState([]);
     const [categories, setCategories] = useState([]);
     const [departments, setDepartments] = useState([]);
@@ -30,8 +30,12 @@ const ProcessStagePage = () => {
     const [deptCode, setDeptCode] = useState({value: 'Loading', label:'Please select'});
     const [catCode, setCatCode] = useState({value: 'Loading', label:'Please select'});
     const [typeCode, setTypeCode] = useState({value: 'Loading', label:'Please select'});
-    const [code, setCode] = useState('');
-    const [typeName, setName] = useState('');
+    const [deviceUid, setDeviceUid] = useState('');
+    const [deviceName, setDeviceName] = useState('');
+    const [ipAddress, setIpAddress] = useState('');
+    const [port, setPort]  = useState('');
+    const [deviceType, setDeviceType] = useState('');
+    const [deviceLayout,setDeviceLayout] = useState('');
     const [id, setId] = useState('');
     const [status, setStatus] = useState('');
     const dispatch = useDispatch();
@@ -45,8 +49,12 @@ const ProcessStagePage = () => {
         setDeptCode(param?.state?.deptCode);
         setOrgCode(param?.state?.orgCode);
         setTypeCode(param?.state?.typeCode);
-        setCode(param?.state?.data?.code);
-        setName(param?.state?.data?.name);
+        setDeviceUid(param?.state?.data?.deviceUid);
+        setDeviceName(param?.state?.data?.deviceName);
+        setIpAddress(param?.state?.data?.ipAddress);
+        setPort(param?.state?.data?.port);
+        setDeviceType(param?.state?.data?.deviceType);
+        setDeviceLayout(param?.state?.data?.deviceLayout);
         masterLookupActions.getAll("ALL",
             param?.state?.orgCode?.value,
             param?.state?.deptCode?.value,
@@ -57,21 +65,22 @@ const ProcessStagePage = () => {
                 setCategories(response.data.categories);
                 setTokenTypes(response.data.tokenTypes);
             });
-        getStageData(
+        getDeviceData(
             param?.state?.orgCode?.value === undefined?'':param?.state?.orgCode?.value,
             param?.state?.deptCode?.value === undefined?'':param?.state?.deptCode?.value,
             param?.state?.catCode?.value === undefined?'':param?.state?.catCode?.value,
             param?.state?.typeCode?.value === undefined?'':param?.state?.typeCode?.value);
     }, []);
 
-    function getStageData(orgCode, deptCode, catCode, typeCode) {
-        processStageActions.getList(
+    function getDeviceData(orgCode, deptCode, catCode, typeCode) {
+        console.log("Start");
+        deviceActions.getList(
             orgCode,
             deptCode,
             catCode,
             typeCode).then((response) => {
                 console.log("Response: ",response);
-                setProcessStages(response);
+                setDevices(response);
             });
     }
 
@@ -103,7 +112,7 @@ const ProcessStagePage = () => {
                 setCategories(response.data.categories);
                 setTokenTypes(response.data.tokenTypes);
             });
-            getStageData(data.value, '','','');
+            getDeviceData(data.value, '','','');
         }
     }
     function handleDepartmentChange(dept) {
@@ -133,7 +142,7 @@ const ProcessStagePage = () => {
                 setCategories(response.data.categories);
                 setTokenTypes(response.data.tokenTypes);
             });
-            getStageData(orgCode.value, dept.value,'','');
+            getDeviceData(orgCode.value, dept.value,'','');
         }
     }
     function handleCategoryChange(cat) {
@@ -163,7 +172,7 @@ const ProcessStagePage = () => {
                 setCategories(response.data.categories);
                 setTokenTypes(response.data.tokenTypes);
             });
-            getStageData(orgCode.value, deptCode.value,cat.value,'');
+            getDeviceData(orgCode.value, deptCode.value,cat.value,'');
         }
     }
     function handleTypeChange(typeCd) {
@@ -191,15 +200,15 @@ const ProcessStagePage = () => {
                     setCategories(response.data.categories);
                     setTokenTypes(response.data.tokenTypes);
                 });
-            getStageData(orgCode.value, deptCode.value,catCode.value,typeCd.value);
+            getDeviceData(orgCode.value, deptCode.value,catCode.value,typeCd.value);
         }
     }
     const handleDeleteClick = (event,data) => {
-        dispatch(processStageActions.delete(data.id));
+        dispatch(deviceActions.delete(data.id));
     }
 
     const handleClick = (event,data) => {
-        navigate("/process-stage-edit", {
+        navigate("/device-edit", {
             state:{
                 orgCode,
                 deptCode,
@@ -211,7 +220,7 @@ const ProcessStagePage = () => {
     };
 
     const handleAddClick = (event) => {
-        navigate("/process-stage-add", {
+        navigate("/device-add", {
             state:{
                 orgCode,
                 deptCode,
@@ -222,8 +231,12 @@ const ProcessStagePage = () => {
     };
 
     const columns = [
-        {name: "Code", selector: row => row.code},
-        {name: "Name", selector: row => row.name, sortable: true},
+        {name: "UID", selector: row => row.deviceUid},
+        {name: "Name", selector: row => row.deviceName, sortable: true},
+        {name: "IP Address", selector: row => row.ipAddress, sortable: true},
+        {name: "Port", selector: row => row.port, sortable: true},
+        {name: "Type", selector: row => row.deviceType, sortable: true},
+        {name: "Layout", selector: row => row.deviceLayout, sortable: true},
         {name: "Status", selector: row => row.status, sortable: true},
         {
             cell: (row) => (
@@ -332,9 +345,9 @@ const ProcessStagePage = () => {
                     </div>
                 </div>
             </div>
-            {processStages ? (<CustomDataTable tableData={processStages} tableColumns={columns} tableTitle={"Process Stage"} subTableTitle={""}/>):""}
+            {devices ? (<CustomDataTable tableData={devices} tableColumns={columns} tableTitle={"Process Stage"} subTableTitle={""}/>):""}
         </>
     );
 }
 
-export default ProcessStagePage;
+export default DevicePage;

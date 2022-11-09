@@ -7,3 +7,4 @@ export * from './tokenType.actions';
 export * from './processStage.actions';
 export * from './counter.actions';
 export * from './masterLookup.actions';
+export * from './device.actions';

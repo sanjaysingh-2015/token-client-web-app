@@ -9,6 +9,7 @@ export const counterActions = {
     getAll,
     getList,
     addProcessMap,
+    addDeviceMap,
     delete: _delete
 };
 
@@ -60,6 +61,27 @@ function addProcessMap(counterNo, body) {
     return dispatch => {
         dispatch(request(body));
         counterService.addProcessMap(counterNo,body)
+            .then(
+                token => {
+                    dispatch(success());
+                    dispatch(alertActions.success('Counter Edited Successfully'));
+                },
+                error => {
+                    dispatch(failure(error.toString()));
+                    dispatch(alertActions.error(error.toString()));
+                }
+            );
+    };
+
+    function request(counter) { return { type: counterConstants.EDIT_REQUEST, counter } }
+    function success(counter) { return { type: counterConstants.EDIT_SUCCESS, counter } }
+    function failure(error) { return { type: counterConstants.EDIT_FAILURE, error } }
+}
+
+function addDeviceMap(counterNo, body) {
+    return dispatch => {
+        dispatch(request(body));
+        counterService.addDeviceMap(counterNo,body)
             .then(
                 token => {
                     dispatch(success());

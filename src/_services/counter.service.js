@@ -8,6 +8,7 @@ export const counterService = {
     getById,
     update,
     addProcessMap,
+    addDeviceMap,
     delete: _delete
 };
 
@@ -31,6 +32,10 @@ function update(stageCode, counter) {
 
 function addProcessMap(counterCode, body) {
     return axios.put(`${process.env.REACT_APP_ROOT_APP_URL}/counter-stage-map/${counterCode}`, body, {headers: authHeader()}).then(handleResponseAxios);
+}
+
+function addDeviceMap(counterCode, body) {
+    return axios.put(`${process.env.REACT_APP_ROOT_APP_URL}/counter-device-map/${counterCode}`, body, {headers: authHeader()}).then(handleResponseAxios);
 }
 
 // prefixed function name with underscore because delete is a reserved word in javascript

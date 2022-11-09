@@ -22,6 +22,9 @@ import ProcessStageForm from "./ProcessStage/ProcessStageForm";
 import CounterPage from "./Counter/CounterPage";
 import CounterForm from "./Counter/CounterForm";
 import CounterProcessMapping from "./Counter/CounterProcessMapping";
+import CounterDeviceMapping from "./Counter/CounterDeviceMapping";
+import DevicePage from "./Device/DevicePage";
+import DeviceForm from "./Device/DeviceForm";
 
 function App() {
     const user = useSelector(state => state.authentication.user);
@@ -68,10 +71,14 @@ function App() {
                                     <Route exact path="/process-stage" element={user ? <ProcessStagePage/> : <Navigate to="/login" />}/>
                                     <Route exact path="/process-stage-add" element={user ? <ProcessStageForm/> : <Navigate to="/login" />}/>
                                     <Route exact path="/process-stage-edit" element={user ? <ProcessStageForm/> : <Navigate to="/login" />}/>
+                                    <Route exact path="/devices" element={user ? <DevicePage/> : <Navigate to="/login" />}/>
+                                    <Route exact path="/device-add" element={user ? <DeviceForm/> : <Navigate to="/login" />}/>
+                                    <Route exact path="/device-edit" element={user ? <DeviceForm/> : <Navigate to="/login" />}/>
                                     <Route exact path="/counters" element={user ? <CounterPage/> : <Navigate to="/login" />}/>
                                     <Route exact path="/counter-add" element={user ? <CounterForm/> : <Navigate to="/login" />}/>
                                     <Route exact path="/counter-edit" element={user ? <CounterForm/> : <Navigate to="/login" />}/>
                                     <Route exaxt path="/counter-process-map" element={user ? <CounterProcessMapping/> : <Navigate to="/login" />}/>
+                                    <Route exaxt path="/counter-device-map" element={user ? <CounterDeviceMapping/> : <Navigate to="/login" />}/>
 
                                     <Route path="/login" element={<LoginPage/>}/>
                                     <Route path="/register" element={<RegisterPage/>}/>

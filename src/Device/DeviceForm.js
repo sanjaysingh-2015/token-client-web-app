@@ -7,7 +7,7 @@ import {
     categoryActions,
     departmentActions,
     organizationActions,
-    processStageActions, masterLookupActions
+    deviceActions, masterLookupActions
 } from "../_actions";
 import {useDispatch, useSelector} from "react-redux";
 import "../_components/templates/custom-styles.css"
@@ -17,8 +17,7 @@ import IconButton from "@material-ui/core/IconButton";
 import {isEmpty} from "lodash";
 import Select from "react-select";
 
-export const ProcessStageForm = () => {
-    const [processStages, setProcessStages] = useState([]);
+export const DeviceForm = () => {
     const [tokenTypes, setTokenTypes] = useState([]);
     const [categories, setCategories] = useState([]);
     const [departments, setDepartments] = useState([]);
@@ -27,23 +26,32 @@ export const ProcessStageForm = () => {
     const [deptCode, setDeptCode] = useState({value: 'Loading', label:'Please select'});
     const [catCode, setCatCode] = useState({value: 'Loading', label:'Please select'});
     const [typeCode, setTypeCode] = useState({value: 'Loading', label:'Please select'});
-    const [code, setCode] = useState('');
-    const [name, setName] = useState('');
+    const [deviceUid, setDeviceUid] = useState('');
+    const [deviceName, setDeviceName] = useState('');
+    const [ipAddress, setIpAddress] = useState('');
+    const [port, setPort]  = useState('');
+    const [deviceType, setDeviceType] = useState('');
+    const [deviceLayout,setDeviceLayout] = useState('');
     const [id, setId] = useState('');
     const [status, setStatus] = useState('');
     const dispatch = useDispatch();
-    const param = useLocation();
     const navigate = useNavigate();
+    const param = useLocation();
 
     useEffect(() => {
+        console.log("Data: ", param?.state?.data);
         setId(param?.state?.data?.id);
         setStatus(param?.state?.data?.status);
         setCatCode(param?.state?.catCode);
         setDeptCode(param?.state?.deptCode);
         setOrgCode(param?.state?.orgCode);
         setTypeCode(param?.state?.typeCode);
-        setCode(param?.state?.data?.code);
-        setName(param?.state?.data?.name);
+        setDeviceUid(param?.state?.data?.deviceUid);
+        setDeviceName(param?.state?.data?.deviceName);
+        setIpAddress(param?.state?.data?.ipAddress);
+        setPort(param?.state?.data?.port);
+        setDeviceType(param?.state?.data?.deviceType);
+        setDeviceLayout(param?.state?.data?.deviceLayout);
         masterLookupActions.getAll("ALL",
             param?.state?.orgCode?.value,
             param?.state?.deptCode?.value,
@@ -62,20 +70,20 @@ export const ProcessStageForm = () => {
         if(id === undefined) {
             if(orgCode === undefined) {
             } else {
-                dispatch(processStageActions.add({
+                dispatch(deviceActions.add({
                     organizationCode: orgCode.value,
                     departmentCode: deptCode? deptCode.value:'',
                     tokenCategoryCode: catCode? catCode.value:'',
-                    tokenTypeCode: typeCode? typeCode.value:'', name
+                    tokenTypeCode: typeCode? typeCode.value:'', deviceUid, deviceName, ipAddress, port, deviceType, deviceLayout
                 }));
             }
         } else {
-            dispatch(processStageActions.edit(code, {organizationCode: orgCode.value,
+            dispatch(deviceActions.edit(deviceUid, {organizationCode: orgCode.value,
                 departmentCode: deptCode? deptCode.value:'',
                 tokenCategoryCode: catCode? catCode.value:'',
-                tokenTypeCode: typeCode? typeCode.value:'', name, status}));
+                tokenTypeCode: typeCode? typeCode.value:'', deviceUid, deviceName, ipAddress, port, deviceType, deviceLayout, status}));
         }
-        navigate("/process-stage", {
+        navigate("/devices", {
             state:{
                 orgCode,
                 deptCode,
@@ -200,7 +208,7 @@ export const ProcessStageForm = () => {
         }
     }
     const handleBackClick = (event,data) => {
-        navigate("/process-stage", {
+        navigate("/devices", {
             state:{
                 orgCode,
                 deptCode,
@@ -310,12 +318,69 @@ export const ProcessStageForm = () => {
                                     <div className="form-group">
                                         <div className="input-group mb-3">
                                             <div className="input-group-prepend">
-                                                <span className="input-group-text required" id="name">Name</span>
+                                                <span className="input-group-text required" id="deviceUid">Name</span>
                                             </div>
-                                            <input className="form-control" placeholder="Enter Name" name="name" value={name} onChange={(e) => setName(e.target.value)} required/>
+                                            <input className="form-control" placeholder="Enter Device UID" name="deviceUid" value={deviceUid} onChange={(e) => setDeviceUid(e.target.value)} required/>
                                         </div>
                                     </div>
                                 </div>
+                                <div className="col-md-6">
+                                    <div className="form-group">
+                                        <div className="input-group mb-3">
+                                            <div className="input-group-prepend">
+                                                <span className="input-group-text required" id="name">Name</span>
+                                            </div>
+                                            <input className="form-control" placeholder="Enter Name" name="name" value={deviceName} onChange={(e) => setDeviceName(e.target.value)} required/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="row form-row">
+                                <div className="col-md-6">
+                                    <div className="form-group">
+                                        <div className="input-group mb-3">
+                                            <div className="input-group-prepend">
+                                                <span className="input-group-text required" id="ipAddress">IP Address</span>
+                                            </div>
+                                            <input className="form-control" placeholder="Enter IP Address" name="ipAddress" value={ipAddress} onChange={(e) => setIpAddress(e.target.value)} required/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="form-group">
+                                        <div className="input-group mb-3">
+                                            <div className="input-group-prepend">
+                                                <span className="input-group-text required" id="port">Port</span>
+                                            </div>
+                                            <input className="form-control" placeholder="Enter Port" name="port" value={port} onChange={(e) => setPort(e.target.value)} required/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="row form-row">
+                                <div className="col-md-6">
+                                    <div className="form-group">
+                                        <div className="input-group mb-3">
+                                            <div className="input-group-prepend">
+                                                <span className="input-group-text required" id="deviceType">Device Type</span>
+                                            </div>
+                                            <input className="form-control" placeholder="Enter Device Type" name="deviceType" value={deviceType} onChange={(e) => setDeviceType(e.target.value)} required/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="form-group">
+                                        <div className="input-group mb-3">
+                                            <div className="input-group-prepend">
+                                                <span className="input-group-text required" id="deviceLayout">Device Layout</span>
+                                            </div>
+                                            <input className="form-control" placeholder="Enter Device Layout" name="deviceLayout" value={deviceLayout} onChange={(e) => setDeviceLayout(e.target.value)} required/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="row form-row">
                                 { id &&
                                     <div className="col-md-6">
                                         <div className="form-group">
@@ -352,4 +417,4 @@ export const ProcessStageForm = () => {
     );
 };
 
-export default ProcessStageForm;
+export default DeviceForm;

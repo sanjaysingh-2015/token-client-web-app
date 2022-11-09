@@ -8,7 +8,7 @@ import IconButton from "@material-ui/core/IconButton";
 import {Edit} from "@material-ui/icons";
 import Delete from "@material-ui/icons/Delete";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCircleArrowLeft, faCirclePlus, faRightToBracket} from "@fortawesome/free-solid-svg-icons";
+import {faTv, faCirclePlus, faRightToBracket} from "@fortawesome/free-solid-svg-icons";
 import {isEmpty} from "lodash";
 import Select from "react-select";
 
@@ -16,6 +16,7 @@ import Select from "react-select";
 const CounterPage = () => {
     const [counters, setCounters] = useState([]);
     const [processStages, setProcessStages] = useState([]);
+    const [devices, setDevices] = useState([]);
     const [tokenTypes, setTokenTypes] = useState([]);
     const [categories, setCategories] = useState([]);
     const [departments, setDepartments] = useState([]);
@@ -42,7 +43,7 @@ const CounterPage = () => {
         setCode(param?.state?.code);
         setCounterNo(param?.state?.counterNo);
         masterLookupActions.getAll("ALL",
-            param?.state?.orgCode.value,
+            param?.state?.orgCode?.value,
             param?.state?.deptCode?.value,
             param?.state?.catCode?.value,
             param?.state?.typeCode?.value).then((response) => {
@@ -51,9 +52,10 @@ const CounterPage = () => {
                 setCategories(response.data.categories);
                 setTokenTypes(response.data.tokenTypes);
                 setProcessStages(response.data.processStages);
+                setDevices(response.data.devices);
             });
         getCounterData(
-            param?.state?.orgCode.value === undefined?'':param?.state?.orgCode?.value,
+            param?.state?.orgCode?.value === undefined?'':param?.state?.orgCode?.value,
             param?.state?.deptCode?.value === undefined?'':param?.state?.deptCode?.value,
             param?.state?.catCode?.value === undefined?'':param?.state?.catCode?.value,
             param?.state?.typeCode?.value === undefined?'':param?.state?.typeCode?.value);
@@ -76,6 +78,7 @@ const CounterPage = () => {
                     setCategories(response.data.categories);
                     setTokenTypes(response.data.tokenTypes);
                     setProcessStages(response.data.processStages);
+                    setDevices(response.data.devices);
                 });
         } else {
             masterLookupActions.getAll("ALL",
@@ -88,6 +91,7 @@ const CounterPage = () => {
                 setCategories(response.data.categories);
                 setTokenTypes(response.data.tokenTypes);
                 setProcessStages(response.data.processStages);
+                setDevices(response.data.devices);
             });
             getCounterData(data.value, '','','');
         }
@@ -108,6 +112,7 @@ const CounterPage = () => {
                 setCategories(response.data.categories);
                 setTokenTypes(response.data.tokenTypes);
                 setProcessStages(response.data.processStages);
+                setDevices(response.data.devices);
             });
         } else {
             masterLookupActions.getAll("ALL",
@@ -120,6 +125,7 @@ const CounterPage = () => {
                 setCategories(response.data.categories);
                 setTokenTypes(response.data.tokenTypes);
                 setProcessStages(response.data.processStages);
+                setDevices(response.data.devices);
             });
             getCounterData(orgCode.value, dept.value,'','');
         }
@@ -140,6 +146,7 @@ const CounterPage = () => {
                 setCategories(response.data.categories);
                 setTokenTypes(response.data.tokenTypes);
                 setProcessStages(response.data.processStages);
+                setDevices(response.data.devices);
             });
         } else {
             masterLookupActions.getAll("ALL",
@@ -152,6 +159,7 @@ const CounterPage = () => {
                 setCategories(response.data.categories);
                 setTokenTypes(response.data.tokenTypes);
                 setProcessStages(response.data.processStages);
+                setDevices(response.data.devices);
             });
             getCounterData(orgCode.value, deptCode.value,cat.value,'');
         }
@@ -170,6 +178,7 @@ const CounterPage = () => {
                 setCategories(response.data.categories);
                 setTokenTypes(response.data.tokenTypes);
                 setProcessStages(response.data.processStages);
+                setDevices(response.data.devices);
             });
         } else {
             masterLookupActions.getAll("ALL",
@@ -182,6 +191,7 @@ const CounterPage = () => {
                 setCategories(response.data.categories);
                 setTokenTypes(response.data.tokenTypes);
                 setProcessStages(response.data.processStages);
+                setDevices(response.data.devices);
             });
             getCounterData(orgCode.value, deptCode.value,catCode.value,typeCode.value);
         }
@@ -212,6 +222,7 @@ const CounterPage = () => {
                     setCategories(response.data.categories);
                     setTokenTypes(response.data.tokenTypes);
                     setProcessStages(response.data.processStages);
+                    setDevices(response.data.devices);
                 });
         });
     }
@@ -238,6 +249,19 @@ const CounterPage = () => {
             },
         });
     }
+
+    const handleDeviceMappingClick = (event, data) => {
+        navigate("/counter-device-map", {
+            state:{
+                orgCode,
+                deptCode,
+                catCode,
+                typeCode,
+                devices,
+                data
+            },
+        });
+    }
     const handleAddClick = (event) => {
         navigate("/counter-add", {
             state:{
@@ -251,6 +275,7 @@ const CounterPage = () => {
 
     const columns = [
         {name: "stages", selector: row => row.mappedProcessStages, omit: true},
+        {name: "stages", selector: row => row.mappedDevices, omit: true},
         {name: "Code", selector: row => row.code},
         {name: "Counter#", selector: row => row.counterNo, sortable: true},
         {name: "Status", selector: row => row.status, sortable: true},
@@ -259,6 +284,16 @@ const CounterPage = () => {
                 <div>
                     <IconButton color="primary" onClick={(e) => handleMappingClick(e, row)}>
                         <FontAwesomeIcon icon={faRightToBracket}/>
+                    </IconButton>
+                </div>
+            ),
+            button: true,
+        },
+        {name: "Map Device",
+            cell: (row) => (
+                <div>
+                    <IconButton color="primary" onClick={(e) => handleDeviceMappingClick(e, row)}>
+                        <FontAwesomeIcon icon={faTv}/>
                     </IconButton>
                 </div>
             ),
